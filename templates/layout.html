@@ -3,126 +3,119 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MundoPorn - Premium</title>
+    <title>{{if .Query}}{{.Query}} - MundoPorn{{else}}MundoPorn - Videos XXX Premium{{end}}</title>
+    <meta name="description" content="{{if .Query}}Los mejores videos de {{.Query}} en alta calidad. MundoPorn - Videos XXX gratis.{{else}}MundoPorn - Tu portal de videos XXX premium gratis. Explora miles de videos en alta calidad.{{end}}">
+    <meta name="keywords" content="{{if .Query}}{{.Query}}, videos xxx, porno, mundo porn{{else}}videos xxx, porno gratis, videos hd, portal xxx{{end}}">
+    <meta name="robots" content="index, follow">
+    <meta property="og:title" content="{{if .Query}}{{.Query}} - MundoPorn{{else}}MundoPorn - Videos XXX{{end}}">
+    <meta property="og:description" content="{{if .Query}}Videos de {{.Query}} en MundoPorn{{else}}Portal de videos XXX premium{{end}}">
+    <meta property="og:type" content="website">
+    <meta property="og:locale" content="es_ES">
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="{{if .Query}}{{.Query}} - MundoPorn{{else}}MundoPorn{{end}}">
+    <link rel="canonical" href="https://mundoporn.com/">
+    
+    <!-- JSON-LD Structured Data -->
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "WebSite",
+        "name": "MundoPorn",
+        "url": "https://mundoporn.com",
+        "potentialAction": {
+            "@type": "SearchAction",
+            "target": "https://mundoporn.com/?q={search_term_string}",
+            "query-input": "required name=search_term_string"
+        }
+    }
+    </script>
+    
+    {{if .IsVideo}}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "VideoObject",
+        "name": "{{.MainVideo.Title}}",
+        "description": "{{.MainVideo.Keywords}}",
+        "thumbnailUrl": "{{.MainVideo.Thumb.Src}}",
+        "uploadDate": "{{.CurrentTime}}",
+        "duration": "{{.MainVideo.LengthMin}}",
+        "embedUrl": "{{.VideoEmbedURL}}"
+    }
+    </script>
+    {{end}}
+    
+    {{if and .Query (len .Videos)}}
+    <script type="application/ld+json">
+    {
+        "@context": "https://schema.org",
+        "@type": "CollectionPage",
+        "name": "{{.Query}} - MundoPorn",
+        "description": "Videos de {{.Query}}",
+        "url": "https://mundoporn.com/?q={{.Query}}",
+        "numberOfItems": {{len .Videos}}
+    }
+    </script>
+    {{end}}
+    
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
     <style>
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0a0a0a; color: #d1d5db; }
         .logo-accent { background: linear-gradient(135deg, #f5c45e 0%, #d49420 100%); }
-     .no-scrollbar::-webkit-scrollbar {
-    display: none;
-}
-
-.no-scrollbar {
-    scrollbar-width: none;
-}
-
-/* carrusel elegante */
-.scroll-snap-x {
-    scroll-snap-type: x mandatory;
-}
-
-.scroll-snap-align-start {
-    scroll-snap-align: start;
-}
-
-/* ocultar scroll completamente */
-.no-scrollbar::-webkit-scrollbar {
-    display: none;
-}
-
-.no-scrollbar {
-    scrollbar-width: none;
-    -ms-overflow-style: none;
-}
-
-/* snap limpio */
-.scroll-snap-x {
-    scroll-snap-type: x mandatory;
-}
-
-/* evita “overflow raro abajo” */
-#ads-carousel {
-    align-items: center;
-    height: 140px;
-}
-
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { scrollbar-width: none; -ms-overflow-style: none; }
+        .scroll-snap-x { scroll-snap-type: x mandatory; }
+        .scroll-snap-align-start { scroll-snap-align: start; }
+        #ads-carousel { align-items: center; height: 140px; }
     </style>
 </head>
 <body>
+
 <div class="relative mt-6">
-
-    <div id="ads-carousel"
-         class="flex flex-nowrap gap-5 overflow-x-auto overflow-y-hidden no-scrollbar px-2 py-2 scroll-smooth scroll-snap-x">
-
-    </div>
-
+    <div id="ads-carousel" class="flex flex-nowrap gap-5 overflow-x-auto overflow-y-hidden no-scrollbar px-2 py-2 scroll-smooth scroll-snap-x"></div>
 </div>
+
 <script>
 const container = document.getElementById("ads-carousel");
-
 for (let i = 0; i < 10; i++) {
-
-    const wrapper = document.createElement("div");
-
-    wrapper.className = `
-        flex-shrink-0
-        w-[340px]
-        h-[100px]
-        rounded-2xl
-        overflow-hidden
-        border border-white/10
-        shadow-lg
-        scroll-snap-align-start
-    `;
-
-    const iframe = document.createElement("iframe");
-
+    var wrapper = document.createElement("div");
+    wrapper.className = "flex-shrink-0 w-[340px] h-[100px] rounded-2xl overflow-hidden border border-white/10 shadow-lg scroll-snap-align-start";
+    var iframe = document.createElement("iframe");
     iframe.width = "340";
     iframe.height = "120";
     iframe.style.border = "none";
-    iframe.style.display = "block";
-
-    iframe.srcdoc = `
-        <script>
-            var atOptions = {
-                key: 'f800ed383edcb23d085ab823bc318708',
-                format: 'iframe',
-                height: 120,
-                width: 320,
-                params: {}
-            };
-        <\/script>
-        <script src="https://www.highperformanceformat.com/f800ed383edcb23d085ab823bc318708/invoke.js"><\/script>
-    `;
-
+    iframe.srcdoc = '<script>var atOptions={key:"f800ed383edcb23d085ab823bc318708",format:"iframe",height:120,width:320,params:{}};</' + 'script><scr' + 'ipt src="https://www.highperformanceformat.com/f800ed383edcb23d085ab823bc318708/invoke.js"></scr' + 'ipt>';
     wrapper.appendChild(iframe);
     container.appendChild(wrapper);
 }
 </script>
 
-    <nav class="sticky top-0 z-50 border-b border-white/[0.06] backdrop-blur-xl bg-black/80">
-        <div class="container mx-auto px-6 py-4">
-            <div class="flex justify-between items-center gap-4">
-                <a href="/" class="flex items-center shrink-0">
-                    <span class="text-2xl font-black text-white">MUNDO</span>
-                    <span class="logo-accent text-black px-2 py-0.5 rounded ml-1 text-sm font-bold">PORN</span>
-                </a>
-                <form action="/" method="GET" class="flex-grow max-w-md relative">
-                    <input type="text" name="q" value="{{.Query}}" placeholder="Search..." class="w-full bg-white/5 border border-white/10 py-2 px-4 rounded-xl text-sm focus:outline-none focus:border-gold-500 text-white">
-                </form>
-            </div>
-            <div class="flex gap-4 overflow-x-auto mt-4 no-scrollbar pb-1">
-                {{range .Categories}}
-                <a href="/?q={{.}}" class="text-[11px] font-bold uppercase tracking-widest text-gray-500 hover:text-gold-400 whitespace-nowrap">{{.}}</a>
-                {{end}}
-            </div>
+<nav class="sticky top-0 z-50 border-b border-white/[0.06] backdrop-blur-xl bg-black/80">
+    <div class="container mx-auto px-6 py-4">
+        <div class="flex justify-between items-center gap-4">
+            <a href="/" class="flex items-center shrink-0">
+                <span class="text-2xl font-black text-white">MUNDO</span>
+                <span class="logo-accent text-black px-2 py-0.5 rounded ml-1 text-sm font-bold">PORN</span>
+            </a>
+            <form action="/" method="GET" class="flex-grow max-w-md">
+                <input type="text" name="q" value="{{.Query}}" placeholder="Search..." class="w-full bg-white/5 border border-white/10 py-2 px-4 rounded-xl text-sm focus:outline-none focus:border-yellow-500 text-white">
+            </form>
         </div>
-    </nav>
-    <main>{{template "content" .}}</main>
-    <footer class="mt-20 py-10 border-t border-white/5 text-center text-xs text-gray-600 uppercase tracking-widest">
-        &copy; 2026 VideoHub
-    </footer>
+        <div class="flex gap-4 overflow-x-auto mt-4 no-scrollbar pb-1">
+            {{range .Categories}}
+            <a href="/?q={{.}}" class="text-[11px] font-bold uppercase tracking-widest text-gray-500 hover:text-yellow-400 whitespace-nowrap">{{.}}</a>
+            {{end}}
+        </div>
+    </div>
+</nav>
+
+<main>{{template "content" .}}</main>
+
+<footer class="mt-20 py-10 border-t border-white/5 text-center text-xs text-gray-600 uppercase tracking-widest">
+    &copy; 2026 VideoHub
+</footer>
+
 <script async="async" data-cfasync="false" src="https://pl20016627.profitablecpmratenetwork.com/c14d6221cacd09bae7934140e373893e/invoke.js"></script>
 <div id="container-c14d6221cacd09bae7934140e373893e"></div>
 

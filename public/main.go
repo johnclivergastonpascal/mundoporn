@@ -77,9 +77,6 @@ func fetchPornhub(page int) []Video {
 
 // --- FUNCIÓN DE GUARDADO FÍSICO ---
 func saveToDisk(filePath string, data URLSet) {
-	if _, err := os.Stat("public"); os.IsNotExist(err) {
-		os.Mkdir("public", 0755)
-	}
 	file, err := os.Create(filePath)
 	if err != nil {
 		fmt.Printf("\n❌ Error al guardar: %v\n", err)
@@ -96,7 +93,7 @@ func saveToDisk(filePath string, data URLSet) {
 func GenerateSitemap(domain string) {
 	const maxURLs = 50000
 	const concurrentLimit = 5 // Reducido para no ser bloqueado por las APIs
-	filePath := "public/sitemap.xml"
+	filePath := "sitemap.xml"
 
 	sitemap := URLSet{
 		Xmlns: "http://www.sitemaps.org/schemas/sitemap/0.9",

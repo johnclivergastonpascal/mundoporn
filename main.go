@@ -7,6 +7,7 @@ import (
 	"html/template"
 	"math/rand"
 	"net/http"
+	"net/url"
 	"os"
 	"strconv"
 	"strings"
@@ -61,20 +62,30 @@ type APIResponse struct {
 	Videos []Video `json:"videos"`
 }
 
+// IndexData - Estructura para la página principal con datos SEO
 type IndexData struct {
-	Videos      []Video
-	Categories  []string
-	CurrentPage int
-	NextPage    int
-	PrevPage    int
-	Query       string
+	Videos        []Video
+	Categories    []string
+	CurrentPage   int
+	NextPage      int
+	PrevPage      int
+	Query         string
+	CurrentURL    string
+	CurrentTime   string
+	IsVideo       bool
+	VideoEmbedURL string
 }
 
+// DetailsData - Estructura para la página de detalles con datos SEO
 type DetailsData struct {
-	MainVideo  Video
-	Related    []Video
-	Categories []string
-	Query      string
+	MainVideo     Video
+	Related       []Video
+	Categories    []string
+	Query         string
+	CurrentURL    string
+	CurrentTime   string
+	IsVideo       bool
+	VideoEmbedURL string
 }
 
 type URL struct {
@@ -87,6 +98,31 @@ type URLSet struct {
 	XMLName xml.Name `xml:"urlset"`
 	Xmlns   string   `xml:"xmlns,attr"`
 	URLs    []URL    `xml:"url"`
+}
+
+// --- HELPERS PARA TEMPLATES ---
+
+// add - Suma dos enteros
+func add(a, b int) int {
+	return a + b
+}
+
+// sub - Resta dos enteros
+func sub(a, b int) int {
+	return a - b
+}
+
+// urlEncode - Codifica una cadena para URL
+func urlEncode(s string) string {
+	return strings.ReplaceAll(url.PathEscape(s), "%20", "+")
+}
+
+// lastSeparator - Devuelve "," si no es el último elemento
+func lastSeparator(i int, total int) string {
+	if i < total-1 {
+		return ","
+	}
+	return ""
 }
 
 // --- LÓGICA DE EXTRACCIÓN DINÁMICA ---
@@ -131,6 +167,14 @@ func extractDynamicMenu(phVideos []PHVideo) []string {
 		result = result[:15]
 	}
 	return result
+}
+
+// getVideoEmbedURL - Obtiene la URL de embed según la fuente
+func getVideoEmbedURL(video Video) string {
+	if video.Source == "pornhub" {
+		return "https://www.pornhub.com/embed/" + video.ID
+	}
+	return "https://www.eporner.com/embed/" + video.ID + "/"
 }
 
 // --- FETCHERS ---
@@ -197,8 +241,12 @@ func main() {
 	rand.Seed(time.Now().UnixNano())
 
 	funcMap := template.FuncMap{
-		"mod":   func(i, j int) bool { return i%j == 0 },
-		"split": strings.Split,
+		"mod":           func(i, j int) bool { return i%j == 0 },
+		"split":         strings.Split,
+		"add":           add,
+		"sub":           sub,
+		"urlEncode":     urlEncode,
+		"lastSeparator": lastSeparator,
 	}
 
 	http.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -224,22 +272,47 @@ func main() {
 		// CATEGORÍAS DINÁMICAS BASADAS EN LOS VIDEOS ACTUALES
 		dynamicCategories := extractDynamicMenu(phRaw)
 
+		// Construir URL base del sitio
+		baseURL := "https://mundoporn.com"
+
 		tmpl := template.Must(template.New("layout.html").Funcs(funcMap).ParseFiles("templates/layout.html", "templates/index.html"))
 		tmpl.ExecuteTemplate(w, "layout.html", IndexData{
-			Videos: allVideos, Categories: dynamicCategories,
-			CurrentPage: page, NextPage: page + 1, PrevPage: page - 1, Query: query,
+			Videos:        allVideos,
+			Categories:    dynamicCategories,
+			CurrentPage:   page,
+			NextPage:      page + 1,
+			PrevPage:      page - 1,
+			Query:         query,
+			CurrentURL:    baseURL,
+			CurrentTime:   time.Now().Format(time.RFC3339),
+			IsVideo:       false,
+			VideoEmbedURL: "",
 		})
 	})
 
 	http.HandleFunc("/video/", func(w http.ResponseWriter, r *http.Request) {
 		id := r.URL.Query().Get("id")
+		title := r.URL.Query().Get("title")
+		keywords := r.URL.Query().Get("keywords")
+		rate := r.URL.Query().Get("rate")
+		lengthMin := r.URL.Query().Get("len")
+		viewsStr := r.URL.Query().Get("views")
+		source := r.URL.Query().Get("source")
+		thumbURL := r.URL.Query().Get("thumb")
+
 		mainVideo := Video{
-			ID: id, Title: r.URL.Query().Get("title"),
-			Keywords: r.URL.Query().Get("keywords"), Rate: r.URL.Query().Get("rate"),
-			LengthMin: r.URL.Query().Get("len"), Source: r.URL.Query().Get("source"),
-			Thumb: ThumbInfo{Src: r.URL.Query().Get("thumb")},
+			ID:        id,
+			Title:     title,
+			Keywords:  keywords,
+			Rate:      rate,
+			LengthMin: lengthMin,
+			Source:    source,
+			Thumb:     ThumbInfo{Src: thumbURL},
 		}
-		mainVideo.Views, _ = strconv.Atoi(r.URL.Query().Get("views"))
+		mainVideo.Views, _ = strconv.Atoi(viewsStr)
+
+		// Generar URL de embed
+		videoEmbedURL := getVideoEmbedURL(mainVideo)
 
 		searchQuery := "sexy"
 		if mainVideo.Keywords != "" {
@@ -251,10 +324,19 @@ func main() {
 		related := append(fetchEporner(searchQuery, 1), normalizePH(phRawRelated)...)
 		rand.Shuffle(len(related), func(i, j int) { related[i], related[j] = related[j], related[i] })
 
+		// Construir URL base del sitio
+		baseURL := "https://mundoporn.com/video/" + id
+
 		tmpl := template.Must(template.New("layout.html").Funcs(funcMap).ParseFiles("templates/layout.html", "templates/details.html"))
 		tmpl.ExecuteTemplate(w, "layout.html", DetailsData{
-			MainVideo: mainVideo, Related: related,
-			Categories: extractDynamicMenu(phRawRelated), Query: "",
+			MainVideo:     mainVideo,
+			Related:       related,
+			Categories:    extractDynamicMenu(phRawRelated),
+			Query:         "",
+			CurrentURL:    baseURL,
+			CurrentTime:   time.Now().Format(time.RFC3339),
+			IsVideo:       true,
+			VideoEmbedURL: videoEmbedURL,
 		})
 	})
 
@@ -265,7 +347,7 @@ func main() {
 	})
 
 	http.HandleFunc("/robots.txt", func(w http.ResponseWriter, r *http.Request) {
-		fmt.Fprintf(w, "User-agent: *\nAllow: /\nSitemap: http://localhost:8080/sitemap.xml")
+		fmt.Fprintf(w, "User-agent: *\nAllow: /\nSitemap: https://mundoporn.com/sitemap.xml")
 	})
 
 	// 1. Leer el puerto de la variable de entorno
