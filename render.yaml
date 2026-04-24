@@ -1,0 +1,14 @@
+services:
+  - type: web
+    name: mundoporn
+    runtime: go
+    plan: free
+
+    buildCommand: go build -o app
+    startCommand: ./app
+
+    envVars:
+      - key: PORT
+        value: 10000
+
+    autoDeploy: true
