@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VideoHub - Premium</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;700;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #0a0a0a; color: #d1d5db; }
+        .logo-accent { background: linear-gradient(135deg, #f5c45e 0%, #d49420 100%); }
+     .no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    scrollbar-width: none;
+}
+
+/* carrusel elegante */
+.scroll-snap-x {
+    scroll-snap-type: x mandatory;
+}
+
+.scroll-snap-align-start {
+    scroll-snap-align: start;
+}
+
+/* ocultar scroll completamente */
+.no-scrollbar::-webkit-scrollbar {
+    display: none;
+}
+
+.no-scrollbar {
+    scrollbar-width: none;
+    -ms-overflow-style: none;
+}
+
+/* snap limpio */
+.scroll-snap-x {
+    scroll-snap-type: x mandatory;
+}
+
+/* evita “overflow raro abajo” */
+#ads-carousel {
+    align-items: center;
+    height: 140px;
+}
+
+    </style>
+</head>
+<body>
+<div class="relative mt-6">
+
+    <div id="ads-carousel"
+         class="flex flex-nowrap gap-5 overflow-x-auto overflow-y-hidden no-scrollbar px-2 py-2 scroll-smooth scroll-snap-x">
+
+    </div>
+
+</div>
+<script>
+const container = document.getElementById("ads-carousel");
+
+for (let i = 0; i < 10; i++) {
+
+    const wrapper = document.createElement("div");
+
+    wrapper.className = `
+        flex-shrink-0
+        w-[340px]
+        h-[100px]
+        rounded-2xl
+        overflow-hidden
+        border border-white/10
+        shadow-lg
+        scroll-snap-align-start
+    `;
+
+    const iframe = document.createElement("iframe");
+
+    iframe.width = "340";
+    iframe.height = "120";
+    iframe.style.border = "none";
+    iframe.style.display = "block";
+
+    iframe.srcdoc = `
+        <script>
+            var atOptions = {
+                key: 'f800ed383edcb23d085ab823bc318708',
+                format: 'iframe',
+                height: 120,
+                width: 320,
+                params: {}
+            };
+        <\/script>
+        <script src="https://www.highperformanceformat.com/f800ed383edcb23d085ab823bc318708/invoke.js"><\/script>
+    `;
+
+    wrapper.appendChild(iframe);
+    container.appendChild(wrapper);
+}
+</script>
+
+    <nav class="sticky top-0 z-50 border-b border-white/[0.06] backdrop-blur-xl bg-black/80">
+        <div class="container mx-auto px-6 py-4">
+            <div class="flex justify-between items-center gap-4">
+                <a href="/" class="flex items-center shrink-0">
+                    <span class="text-2xl font-black text-white">MUNDO</span>
+                    <span class="logo-accent text-black px-2 py-0.5 rounded ml-1 text-sm font-bold">PORN</span>
+                </a>
+                <form action="/" method="GET" class="flex-grow max-w-md relative">
+                    <input type="text" name="q" value="{{.Query}}" placeholder="Search..." class="w-full bg-white/5 border border-white/10 py-2 px-4 rounded-xl text-sm focus:outline-none focus:border-gold-500 text-white">
+                </form>
+            </div>
+            <div class="flex gap-4 overflow-x-auto mt-4 no-scrollbar pb-1">
+                {{range .Categories}}
+                <a href="/?q={{.}}" class="text-[11px] font-bold uppercase tracking-widest text-gray-500 hover:text-gold-400 whitespace-nowrap">{{.}}</a>
+                {{end}}
+            </div>
+        </div>
+    </nav>
+    <main>{{template "content" .}}</main>
+    <footer class="mt-20 py-10 border-t border-white/5 text-center text-xs text-gray-600 uppercase tracking-widest">
+        &copy; 2026 VideoHub
+    </footer>
+<script async="async" data-cfasync="false" src="https://pl20016627.profitablecpmratenetwork.com/c14d6221cacd09bae7934140e373893e/invoke.js"></script>
+<div id="container-c14d6221cacd09bae7934140e373893e"></div>
+
+</body>
+</html>
