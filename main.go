@@ -2,10 +2,12 @@ package main
 
 import (
 	"encoding/json"
+	"encoding/xml"
 	"fmt"
 	"html/template"
 	"math/rand"
 	"net/http"
+	"os"
 	"strconv"
 	"strings"
 	"sync"
@@ -73,6 +75,18 @@ type DetailsData struct {
 	Related    []Video
 	Categories []string
 	Query      string
+}
+
+type URL struct {
+	Loc        string `xml:"loc"`
+	Changefreq string `xml:"changefreq"`
+	Priority   string `xml:"priority"`
+}
+
+type URLSet struct {
+	XMLName xml.Name `xml:"urlset"`
+	Xmlns   string   `xml:"xmlns,attr"`
+	URLs    []URL    `xml:"url"`
 }
 
 // --- LÓGICA DE EXTRACCIÓN DINÁMICA ---
@@ -244,6 +258,28 @@ func main() {
 		})
 	})
 
+	// Esta línea hace que cuando alguien pida /sitemap.xml,
+	// el servidor busque el archivo dentro de la carpeta public.
+	http.HandleFunc("/sitemap.xml", func(w http.ResponseWriter, r *http.Request) {
+		http.ServeFile(w, r, "./public/sitemap.xml")
+	})
+
+	http.HandleFunc("/robots.txt", func(w http.ResponseWriter, r *http.Request) {
+		fmt.Fprintf(w, "User-agent: *\nAllow: /\nSitemap: http://localhost:8080/sitemap.xml")
+	})
+
+	// 1. Leer el puerto de la variable de entorno
+	port := os.Getenv("PORT")
+
+	// 2. Si está vacío (local), usar el 8080 o el que prefieras
+	if port == "" {
+		port = "8080"
+	}
+
 	fmt.Println("🚀 Servidor en http://localhost:8080")
-	http.ListenAndServe(":8080", nil)
+	// Escuchar en "0.0.0.0:PORT" para que sea accesible externamente
+	err := http.ListenAndServe(":"+port, nil)
+	if err != nil {
+		panic(err)
+	}
 }
